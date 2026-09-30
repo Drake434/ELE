@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elektrik</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--y:#F5C400;--k:#1d1d1b;--p:#f2f0ea;--c:#b5651d;--w:#fff}
+*{box-sizing:border-box;margin:0}
+body{font-family:Archivo,"Segoe UI",Arial,sans-serif;background:var(--p);color:var(--k);min-height:100vh}
+header{background:var(--y);padding:40px 24px 34px;text-align:center;border-bottom:14px solid transparent;border-image:repeating-linear-gradient(-45deg,var(--k) 0 14px,var(--y) 14px 28px) 14}
+h1{font-size:clamp(3rem,10vw,6rem);font-weight:800;letter-spacing:.04em;line-height:1}
+header p{font-size:1.25rem;margin-top:10px;font-weight:600}
+main{max-width:1000px;margin:0 auto;padding:32px 20px 48px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--w);border-left:8px solid var(--k);padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px;transition:transform .15s,border-color .15s}
+.card:hover,.card:focus-visible{transform:translateY(-3px);border-left-color:var(--c)}
+.card:focus-visible{outline:3px solid var(--k);outline-offset:2px}
+.card .i{font-size:1.9rem}
+.card b{font-size:1.25rem;font-weight:800}
+.card span{color:#555;font-size:.98rem}
+.card.warn{background:var(--k);color:var(--w);border-left-color:var(--y)}
+.card.warn span{color:#ddd}
+.card.warn:hover{border-left-color:var(--y)}
+#ov{position:fixed;inset:0;background:rgba(20,20,18,.65);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+#ov.on{display:flex}
+#dlg{background:var(--w);width:100%;max-width:620px;max-height:80vh;overflow:auto;padding:28px 28px 30px;border-top:10px solid var(--y);position:relative;animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+#dlg h2{font-size:1.7rem;font-weight:800;margin-bottom:14px;padding-right:40px}
+#dlg p,#dlg li{line-height:1.6;font-size:1.05rem}
+#dlg ul,#dlg ol{padding-left:22px;display:grid;gap:6px}
+#dlg p+ul,#dlg ul+p,#dlg ol+p{margin-top:14px}
+#x{position:absolute;top:10px;right:12px;border:0;background:none;font-size:2rem;line-height:1;cursor:pointer;color:var(--k)}
+.lv{padding:10px 0;border-bottom:1px solid #ddd;line-height:1.55}
+.lv:last-child{border:0}
+.lv b{color:var(--c)}
+@media (prefers-reduced-motion:reduce){#dlg{animation:none}.card{transition:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>ELEKTRIK</h1>
+<p>Valgus igasse koju</p>
+</header>
+<main id="grid"></main>
+<div id="ov" aria-hidden="true">
+<div id="dlg" role="dialog" aria-modal="true" aria-labelledby="t">
+<button id="x" aria-label="Sulge">&times;</button>
+<h2 id="t"></h2>
+<div id="b"></div>
+</div>
+</div>
+<script>
+const S=[
+{i:"👷",t:"Kes ta on?",s:"Elektri eest vastutav spetsialist",h:"<p>Elektrik on spetsialist, kes paigaldab, hooldab ja remondib elektrijuhtmestikku, elektrikilpe, valgustust ja muid elektriseadmeid. Ta vastutab selle eest, et elekter töötaks kodudes, ettevõtetes ja avalikes hoonetes korralikult ja ohutult. Ta leiab ja kõrvaldab rikkeid, kontrollib elektrivõrkude seisukorda ning jälgib elektriohutusnõuete täitmist.</p>"},
+{i:"🔌",t:"Mida elektrik teeb",s:"Paigaldus, hooldus, rikete otsing",h:"<ul><li>paigaldab kaableid ja juhtmestikku hoonetes</li><li>paigaldab pistikupesasid, lüliteid ja valgusteid</li><li>koostab, ühendab ja hooldab elektrikilpe</li><li>mõõdab võrgu parameetreid ja kontrollib seadmete tööd</li><li>leiab ja kõrvaldab rikkeid ning avariisituatsioone</li><li>loeb elektriskeeme ja jooniseid</li><li>teeb elektripaigaldiste plaanilist hooldust</li></ul>"},
+{i:"🔧",t:"Tööriistad",s:"Multimeeter, näpitsad, puurvasar",h:"<ul><li>multimeeter ja pingenäidik mõõtmiseks ning pinge kontrollimiseks</li><li>näpitsad, külglõikurid ja isolatsiooni eemaldaja juhtmetega töötamiseks</li><li>puurvasar ja trell paigaldamiseks ning kaablite vedamiseks</li><li>isolatsioonilint, klemmid, kaabel</li><li>kaitsevahendid: dielektrilised kindad, dielektriline matt, kaitseprillid, kiiver</li></ul>"},
+{i:"🧠",t:"Omadused",s:"Tähelepanelik, vastutustundlik",h:"<ul><li>tähelepanelikkus ja korrektsus</li><li>suur vastutustunne</li><li>head teadmised elektrotehnikast</li><li>oskus lugeda skeeme ja jooniseid</li><li>loogiline mõtlemine</li><li>stressitaluvus</li><li>füüsiline vastupidavus</li><li>oskus töötada meeskonnas</li></ul>"},
+{i:"⚠️",t:"Elukutse ohud",s:"Elektrilöök, kaar, kukkumine",w:1,h:"<ul><li><b>elektrilöök:</b> tõsised vigastused, sealhulgas eluohtlikud</li><li><b>elektrikaar:</b> põletused lühise tagajärjel</li><li><b>kukkumine kõrgusest:</b> redelitel, mastidel ja tellingutel töötades</li><li><b>tulekahju</b> lühise või võrgu ülekoormuse tõttu</li><li><b>müra ja tolm</b> ehitusplatsidel ning ruumides</li><li><b>ebamugavad asendid</b> ja füüsiline koormus paigaldamisel</li></ul><p>Seepärast kasutab elektrik alati kaitsevahendeid ja järgib rangelt elektriohutuse reegleid.</p>"},
+{i:"🛡️",t:"Peamine reegel: ohutus!",s:"5 sammu enne tööd",w:1,h:"<ol><li>Lülita pinge välja</li><li>Kaitse seade kogemata sisselülitamise eest</li><li>Kontrolli pinge puudumist</li><li>Kasuta kaitsevahendeid (kindad, matt, isoleeritud tööriistad)</li><li>Tööta ainult oma kutsetaseme piires</li></ol>"},
+{i:"🏭",t:"Kus ta töötab",s:"Kodud, tehased, ehitusplatsid",h:"<p>Elamutes ja korterites, tehastes ja tootmisettevõtetes, ehitusplatsidel, energiaettevõtetes, remondi- ja hooldusfirmades, kaubanduskeskustes ja büroohoonetes. Võib töötada ka enda heaks ja asutada oma elektrifirma.</p>"},
+{i:"📈",t:"Karjäär Eestis",s:"Kutsetasemed 3 kuni 6+",h:"<div class='lv'><b>Tase 3</b> (töötab ainult kogenuma elektriku järelevalve all)</div><div class='lv'><b>Tase 4</b> (töötab iseseisvalt, kuid ainult kasutuses olevates paigaldistes kaitsega kuni 35 A ja ainult enda tehtava töö osas, teisi juhtida ei tohi)</div><div class='lv'><b>Tase 5</b> (töötab iseseisvalt, korraldab ja juhib töörühma tööd ning vastutab selle tulemuse eest; võib töötada paigaldistes peakaitsmega kuni 250 A ning kõrgepingepaigaldistes)</div><div class='lv'><b>Tase 6 ja kõrgem</b></div>"},
+{i:"💡",t:"Huvitavad faktid",s:"Amet, mida vajatakse alati",h:"<ul><li>Elektriku elukutset on vaja igal pool ja alati: ilma temata ei tööta ükski maja, tehas ega linn.</li><li>Elektrikud on alati nõutud, sest elekter on igas hoones ja seda tuleb pidevalt hooldada.</li><li>Eestis saab alates 2031. aastast elektritööde tegemise pädevust tõendada ainult kutsetunnistusega.</li></ul>"}
+];
+const g=document.getElementById("grid"),ov=document.getElementById("ov"),T=document.getElementById("t"),B=document.getElementById("b"),X=document.getElementById("x");
+let last=null;
+S.forEach((d,n)=>{const c=document.createElement("button");c.className="card"+(d.w?" warn":"");c.innerHTML=`<span class="i" style="color:inherit">${d.i}</span><b>${d.t}</b><span>${d.s}</span>`;c.onclick=()=>open(n,c);g.appendChild(c)});
+function open(n,el){last=el;T.textContent=S[n].t;B.innerHTML=S[n].h;ov.classList.add("on");ov.setAttribute("aria-hidden","false");document.getElementById("dlg").scrollTop=0;X.focus()}
+function close(){ov.classList.remove("on");ov.setAttribute("aria-hidden","true");if(last)last.focus()}
+ov.addEventListener("click",e=>{if(e.target===ov)close()});
+X.onclick=close;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ov.classList.contains("on"))close()});
+</script>
+</body>
+</html>
